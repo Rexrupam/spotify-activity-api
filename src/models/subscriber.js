@@ -14,7 +14,8 @@ const susbcriberSchema = new mongoose.Schema({
         required: true,
         default: Date.now
     }
-}, {
+}, 
+{
     timestamps: true
 }
 )
