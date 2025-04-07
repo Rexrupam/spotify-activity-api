@@ -1,1 +1,1 @@
-export const db_name = "getYoutubeSubscribers"
+export const db_name = "blog-application"
