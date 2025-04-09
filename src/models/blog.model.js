@@ -6,6 +6,9 @@ const blogSchema = new mongoose.Schema({
     },
     content: {
        type: String 
+    },
+    embedding:{
+        type: [Number]
     }
 }, 
 {
