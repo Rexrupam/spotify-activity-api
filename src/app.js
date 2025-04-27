@@ -2,6 +2,11 @@ import express from "express"
 import HealthCheckRouter from "./router/spotify.router.js"
 import bodyParser from "body-parser"
 import cookieParser from "cookie-parser"
+import cors from "cors"
+app.use(cors({
+    origin: process.env.cors_origin,
+    credentials: true
+}))
 const app = express()
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))
