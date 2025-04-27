@@ -18,25 +18,28 @@ export const login = async(req,res)=>{
 }
 
 export const callback = async(req,res)=>{
-  const code = req.query.code || null;
+ const code = req.query.code || null;
   try{
      const response = await axios.post('https://accounts.spotify.com/api/token',
       querystring.stringify({
-        response_type: 'code',
+        grant_type: 'authorization_code',
+        code: code,
+        redirect_uri: process.env.redirect_uri,
         client_id: process.env.client_id,
-        scope: scope,
-        redirect_uri: process.env.redirect_uri
-      }), {
+        client_secret: process.env.client_secret
+      }),
+       {
       headers:{
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     })
-    return res.status(200).json({response:response.data})
+    return res.status(200).json({response:response.data, data: healthCheck.data})
   }catch(error){
-     return res.status(500).json({error})
+     return res.status(500).json({error: error.message})
   }
 }
 
 export const healthCheck=async(req,res)=>{
-    return res.send({message: "Ok"})
+  return res.json({message: 'ok'})
 }
+
