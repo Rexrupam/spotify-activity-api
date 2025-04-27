@@ -33,11 +33,24 @@ export const callback = async(req,res)=>{
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     })
-    return res.status(200).json({response:response.data, data: healthCheck.data})
+    return res.json({message: "Successfully login into spotify"})
   }catch(error){
      return res.status(500).json({error: error.message})
   }
 }
+
+const stopPlayback = async (accessToken) => {
+  try {
+    await axios.put('https://api.spotify.com/v1/me/player/pause', {}, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    });
+    console.log('Playback paused.');
+  } catch (error) {
+    console.error('Error pausing playback:', error.response?.data || error.message);
+  }
+};
 
 export const healthCheck=async(req,res)=>{
   return res.json({message: 'ok'})
