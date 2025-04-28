@@ -1,5 +1,5 @@
 import {Router} from "express"
-import { login, healthCheck, callback, getgoogle} from "../controller/spotify.controller.js";
+import { login, healthCheck, callback} from "../controller/spotify.controller.js";
 
 const router = Router();
 
