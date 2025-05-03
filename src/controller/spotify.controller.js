@@ -33,14 +33,54 @@ export const callback = async(req,res)=>{
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     })
-      res.redirect('http://127.0.0.1:5500/portfolio.html?login=success') 
+    const options = {
+      httpOnly: true,
+      secure: true
+     }
+    return res
+    .cookie('accessToken', response.data.access_token, options)
+    .cookie('refreshToken', response.data.refresh_token, options)
+    .json({response: response.data})
   }catch(error){
      return res.status(500).json({error: error.message})
   }
 }
 
+export const stop = async(req,res)=>{
+   const token = req.cookies.accessToken
+   //token.accessToken -> to get the access token
+   if(!token){
+    return res.status(400).json({message: "token not found"})
+   }
+   try {
+    const response = await axios.put('https://api.spotify.com/v1/me/player/pause', null, {
+     headers: {
+       Authorization: `Bearer ${token}`
+     }
+      })
+      return res.status(200).json({message: 'Playback paused successfully'})
+   } catch (error) {
+     return res.status(500).json({message: error.message})
+   }
+}
 
+export const topTracks = async(req,res)=>{
+  const token = req.cookies.accessToken
+  if(!token){
+    return res.status(400).json({message: "token not found"})
+   }
+   try {
+    const response = await axios.get('https://api.spotify.com/v1/me/top/tracks?limit=10&time_range=long_term', {
+     headers: {
+       Authorization: `Bearer ${token}`
+     }
+      })
+      return res.status(200).json({message: response.data})
+   } catch (error) {
+     return res.status(500).json({message: error.message})
+   }
 
+}
 
 export const healthCheck=async(req,res)=>{
   return res.json({message: 'ok'})
