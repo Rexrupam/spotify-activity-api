@@ -24,6 +24,7 @@ export const callback = async(req,res)=>{
       querystring.stringify({
         grant_type: 'authorization_code',
         code: code,
+        scope: scope,
         redirect_uri: process.env.redirect_uri,
         client_id: process.env.client_id,
         client_secret: process.env.client_secret
