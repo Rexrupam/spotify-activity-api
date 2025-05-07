@@ -138,7 +138,7 @@ export const playAnyTop10Track = async(req,res)=>{
       return res.status(200).json({message: `Playing ${trackName}`})
    } catch (error) {
      console.log("message", error)
-     return res.status(500).json({message: error.response.data.error})
+     return res.status(500).json({message: error.response.data})
    }
 }
 
