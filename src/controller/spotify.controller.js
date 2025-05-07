@@ -1,6 +1,6 @@
 import axios from "axios"
 import querystring from "querystring"
-const scope = 'user-read-private user-read-email'
+let scope = 'user-read-private user-read-email user-top-read user-modify-playback-state'
 
 const queryParams = querystring.stringify({
   response_type: 'code',
@@ -48,17 +48,19 @@ export const callback = async(req,res)=>{
 }
 
 export const stop = async(req,res)=>{
-   const token = req.cookies.accessToken
-   //token.accessToken -> to get the access token
-   if(!token){
-    return res.status(400).json({message: "token not found"})
-   }
+    const token = req.cookies.accessToken
+    //token.accessToken -> to get the access token
+    if(!token){
+     return res.status(400).json({message: "token not found"})
+    }
    try {
-    const response = await axios.put('https://api.spotify.com/v1/me/player/pause', null, {
-     headers: {
+    const response = await axios.put('https://api.spotify.com/v1/me/player/pause',
+      null,
+     {
+      headers: {
        Authorization: `Bearer ${token}`
      }
-      })
+     })
       return res.status(200).json({message: 'Playback paused successfully'})
    } catch (error) {
      return res.status(500).json({message: error.message})
@@ -71,14 +73,71 @@ export const topTracks = async(req,res)=>{
     return res.status(400).json({message: "token not found"})
    }
    try {
-    const response = await axios.get('https://api.spotify.com/v1/me/top/tracks?limit=10&time_range=long_term', {
+    const response = await axios.get('https://api.spotify.com/v1/me/top/tracks?limit=10'
+      ,{
      headers: {
        Authorization: `Bearer ${token}`
      }
       })
-      return res.status(200).json({message: response.data})
+     let trackNames=[]
+     for(let i=0; i<response.data.items.length; i++){
+      trackNames[i] = response.data.items[i].name
+     }
+
+      return res.status(200).json({trackNames})
    } catch (error) {
-     return res.status(500).json({message: error.message})
+     return res.status(500).json({message: error})
+   }
+
+}
+export const play = async(req,res)=>{
+  const token = req.cookies.accessToken
+  //token.accessToken -> to get the access token
+  if(!token){
+   return res.status(400).json({message: "token not found"})
+  }
+ try {
+  const response = await axios.put('https://api.spotify.com/v1/me/player/play',
+    null,
+   {
+    headers: {
+     Authorization: `Bearer ${token}`
+   }
+   })
+    return res.status(200).json({message: 'Playback played successfully'})
+ } catch (error) {
+   return res.status(500).json({message: error.message})
+ }
+}
+
+export const playAnyTop10Track = async(req,res)=>{
+  const token = req.cookies.accessToken
+  //token.accessToken -> to get the access token
+  if(!token){
+   return res.status(400).json({message: "token not found"})
+  }
+   try {
+    const getTopTrack = await axios.get('https://api.spotify.com/v1/me/top/tracks?limit=10'
+      ,{
+     headers: {
+       Authorization: `Bearer ${token}`
+     }
+      })
+      const randomNum = Math.floor(Math.random() * 10)
+     const playTopTrack = await axios.put('https://api.spotify.com/v1/me/player/play',
+     {
+        "uris": [getTopTrack.data.items[randomNum].uri]
+      },
+     {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+     )             
+
+      return res.status(200).json({message: `Playing ${getTopTrack.data.items[randomNum].name}`})
+   } catch (error) {
+     return res.status(500).json({message: error})
    }
 
 }
