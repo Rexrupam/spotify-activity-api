@@ -43,7 +43,7 @@ export const callback = async(req,res)=>{
     .cookie('refreshToken', response.data.refresh_token, options)
     .json({response: response.data})
   }catch(error){
-     return res.status(500).json({error: error.message})
+     return res.status(500).json({error: error.response.data.error.message})
   }
 }
 
@@ -63,7 +63,7 @@ export const stop = async(req,res)=>{
      })
       return res.status(200).json({message: 'Playback paused successfully'})
    } catch (error) {
-     return res.status(500).json({message: error.message})
+     return res.status(500).json({message: error.response.data.error.message})
    }
 }
 
@@ -86,7 +86,7 @@ export const topTracks = async(req,res)=>{
 
       return res.status(200).json({trackNames})
    } catch (error) {
-     return res.status(500).json({message: error})
+     return res.status(500).json({message: error.response.data.error.message})
    }
 
 }
@@ -106,7 +106,7 @@ export const play = async(req,res)=>{
    })
     return res.status(200).json({message: 'Playback played successfully'})
  } catch (error) {
-   return res.status(500).json({message: error.message})
+   return res.status(500).json({message: error.response.data.error.message})
  }
 }
 
@@ -117,16 +117,17 @@ export const playAnyTop10Track = async(req,res)=>{
    return res.status(400).json({message: "token not found"})
   }
    try {
-    const getTopTrack = await axios.get('https://api.spotify.com/v1/me/top/tracks?limit=10'
+    let response = await axios.get('https://api.spotify.com/v1/me/top/tracks?limit=10'
       ,{
      headers: {
        Authorization: `Bearer ${token}`
      }
       })
       const randomNum = Math.floor(Math.random() * 10)
-     const playTopTrack = await axios.put('https://api.spotify.com/v1/me/player/play',
+      const trackName = response.data.items[randomNum].name
+      response = await axios.put('https://api.spotify.com/v1/me/player/play',
      {
-        "uris": [getTopTrack.data.items[randomNum].uri]
+        "uris": [response.data.items[randomNum].uri]
       },
      {
         headers: {
@@ -135,11 +136,11 @@ export const playAnyTop10Track = async(req,res)=>{
       }
      )             
 
-      return res.status(200).json({message: `Playing ${getTopTrack.data.items[randomNum].name}`})
+      return res.status(200).json({message: `Playing ${trackName}`})
    } catch (error) {
-     return res.status(500).json({message: error})
+     console.log("message", error)
+     return res.status(500).json({message: error.response.data.error.message})
    }
-
 }
 
 export const healthCheck=async(req,res)=>{
