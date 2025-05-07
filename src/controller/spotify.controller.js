@@ -41,9 +41,9 @@ export const callback = async(req,res)=>{
     return res
     .cookie('accessToken', response.data.access_token, options)
     .cookie('refreshToken', response.data.refresh_token, options)
-    .json({response: response.data})
+    .json({message: "successfully login with spotify"})
   }catch(error){
-     return res.status(500).json({error: error.response.data.error.message})
+     return res.status(500).json({error: error.response.data.error})
   }
 }
 
@@ -63,7 +63,7 @@ export const stop = async(req,res)=>{
      })
       return res.status(200).json({message: 'Playback paused successfully'})
    } catch (error) {
-     return res.status(500).json({message: error.response.data.error.message})
+     return res.status(500).json({message: error.response.data.error})
    }
 }
 
@@ -86,13 +86,12 @@ export const topTracks = async(req,res)=>{
 
       return res.status(200).json({trackNames})
    } catch (error) {
-     return res.status(500).json({message: error.response.data.error.message})
+     return res.status(500).json({message: error.response.data.error})
    }
 
 }
 export const play = async(req,res)=>{
   const token = req.cookies.accessToken
-  //token.accessToken -> to get the access token
   if(!token){
    return res.status(400).json({message: "token not found"})
   }
@@ -106,7 +105,7 @@ export const play = async(req,res)=>{
    })
     return res.status(200).json({message: 'Playback played successfully'})
  } catch (error) {
-   return res.status(500).json({message: error.response.data.error.message})
+   return res.status(500).json({message: error.response.data.error})
  }
 }
 
@@ -139,7 +138,7 @@ export const playAnyTop10Track = async(req,res)=>{
       return res.status(200).json({message: `Playing ${trackName}`})
    } catch (error) {
      console.log("message", error)
-     return res.status(500).json({message: error.response.data.error.message})
+     return res.status(500).json({message: error.response.data.error})
    }
 }
 
