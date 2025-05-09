@@ -1,5 +1,6 @@
 import express from "express"
-import HealthCheckRouter from "./router/spotify.router.js"
+import HealthCheckRouter from "./router/healthCheck.route.js"
+import PlayControlRouter from "./router/spotify.router.js"
 import bodyParser from "body-parser"
 import cookieParser from "cookie-parser"
 import cors from "cors"
@@ -15,5 +16,6 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(cookieParser())
 
-app.use('/',HealthCheckRouter)
+app.use('/', HealthCheckRouter)
+app.use('/', PlayControlRouter)
 export { app };

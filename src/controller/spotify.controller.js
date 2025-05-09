@@ -1,6 +1,6 @@
 import axios from "axios"
 import querystring from "querystring"
-let scope = 'user-read-private user-read-email user-top-read user-modify-playback-state'
+const scope = 'user-read-private user-read-email user-top-read user-modify-playback-state user-read-playback-state user-read-currently-playing'
 
 const queryParams = querystring.stringify({
   response_type: 'code',
@@ -48,10 +48,9 @@ export const callback = async(req,res)=>{
 }
 
 export const stop = async(req,res)=>{
-    const token = req.cookies.accessToken
-    //token.accessToken -> to get the access token
+    const token = req.token
     if(!token){
-     return res.status(400).json({message: "token not found"})
+     return res.status(401).json({message: "Unauthorised access"})
     }
    try {
     const response = await axios.put('https://api.spotify.com/v1/me/player/pause',
@@ -63,14 +62,16 @@ export const stop = async(req,res)=>{
      })
       return res.status(200).json({message: 'Playback paused successfully'})
    } catch (error) {
-     return res.status(500).json({message: error.response.data.error})
+    const status = error.response?.data?.error?.status || 500
+    const message = error.response?.data?.error?.message || "Internal server error"
+    res.status(status).json({message})
    }
 }
 
 export const topTracks = async(req,res)=>{
-  const token = req.cookies.accessToken
+  const token = req.token
   if(!token){
-    return res.status(400).json({message: "token not found"})
+    return res.status(401).json({message: "Unauthorised access"})
    }
    try {
     const response = await axios.get('https://api.spotify.com/v1/me/top/tracks?limit=10'
@@ -86,14 +87,16 @@ export const topTracks = async(req,res)=>{
 
       return res.status(200).json({trackNames})
    } catch (error) {
-     return res.status(500).json({message: error.response.data.error})
+    const status = error.response?.data?.error?.status || 500
+    const message = error.response?.data?.error?.message || "Internal server error"
+    res.status(status).json({message})
    }
 
 }
 export const play = async(req,res)=>{
-  const token = req.cookies.accessToken
+  const token = req.token
   if(!token){
-   return res.status(400).json({message: "token not found"})
+   return res.status(401).json({message: "Unauthorised access"})
   }
  try {
   const response = await axios.put('https://api.spotify.com/v1/me/player/play',
@@ -105,15 +108,16 @@ export const play = async(req,res)=>{
    })
     return res.status(200).json({message: 'Playback played successfully'})
  } catch (error) {
-   return res.status(500).json({message: error.response.data.error})
- }
+  const status = error.response?.data?.error?.status || 500
+  const message = error.response?.data?.error?.message || "Internal server error"
+  return res.status(status).json({message:error.response.data.error})
+}
 }
 
 export const playAnyTop10Track = async(req,res)=>{
-  const token = req.cookies.accessToken
-  //token.accessToken -> to get the access token
+  const token = req.token
   if(!token){
-   return res.status(400).json({message: "token not found"})
+   return res.status(401).json({message: "Unauthorised access"})
   }
    try {
     let response = await axios.get('https://api.spotify.com/v1/me/top/tracks?limit=10'
@@ -137,12 +141,31 @@ export const playAnyTop10Track = async(req,res)=>{
 
       return res.status(200).json({message: `Playing ${trackName}`})
    } catch (error) {
-     console.log("message", error)
-     return res.status(500).json({message: error.response.data})
+    const status = error.response?.data?.error?.status || 500
+    const message = error.response?.data?.error?.message || "Internal server error"
+    res.status(status).json({message})
    }
 }
 
-export const healthCheck=async(req,res)=>{
-  return res.json({message: 'ok'})
+export const getCurrentPlay=async(req,res)=>{
+  const token = req.token
+  if(!token){
+   return res.status(401).json({message: "Unauthorised access"})
+  }
+  try {
+    const response = await axios.get('https://api.spotify.com/v1/me/player/queue',
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+       )
+     return res.status(200).json({message: response.data.currently_playing?.name || "No song is currently playing"})
+  } catch (error) {
+    const status = error.response?.data?.error.status || 500
+    const message = error.response?.data?.error.message || "Internal server error"
+    return res.status(status).json({message})
+  }
 }
+
 
