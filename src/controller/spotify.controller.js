@@ -41,7 +41,7 @@ export const callback = async(req,res)=>{
     return res
     .cookie('accessToken', response.data.access_token, options)
     .cookie('refreshToken', response.data.refresh_token, options)
-    .redirect('https://rexrupam-github-io.onrender.com/portfolio.html')
+    .redirect('https://rexrupam-github-io.onrender.com/portfolio.html?login=success')
   }catch(error){
      return res.status(500).json({error: error.response.data.error})
   }
