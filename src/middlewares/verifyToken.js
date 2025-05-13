@@ -1,8 +1,10 @@
+import jwt from "jsonwebtoken"
 export const verifyToken = async(req,res,next)=>{
-  const token = req.cookies.accessToken
+  const token = req.cookies.token 
   if(!token){
-   return res.status(401).json({message: "Unauthorised access"})
+    return res.status(401).json({message: "Unauthorised access"})
   }
-  req.token = token
+  const user = jwt.verify(token, process.env.key)
+  req.user = user
   next()
 }

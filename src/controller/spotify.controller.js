@@ -1,4 +1,5 @@
 import axios from "axios"
+import jwt from "jsonwebtoken"
 import querystring from "querystring"
 const scope = 'user-read-private user-read-email user-top-read user-modify-playback-state user-read-playback-state user-read-currently-playing'
 
@@ -34,13 +35,21 @@ export const callback = async(req,res)=>{
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     })
+    const token = jwt.sign({
+      accessToken:response.data.access_token,
+      refreshToken:response.data.refresh_token
+    },
+    process.env.key,
+    {
+      expiresIn: process.env.key_expiry
+    }
+    )
     const options = {
       httpOnly: true,
       secure: true
      }
     return res
-    .cookie('accessToken', response.data.access_token, options)
-    .cookie('refreshToken', response.data.refresh_token, options)
+    .cookie('token', token, options)
     .redirect('https://rexrupam-github-io.onrender.com/portfolio.html?login=success')
   }catch(error){
      return res.status(500).json({error: error.response.data.error})
@@ -48,7 +57,7 @@ export const callback = async(req,res)=>{
 }
 
 export const stop = async(req,res)=>{
-    const token = req.token
+    const token = req.user.accessToken
     if(!token){
      return res.status(401).json({message: "Unauthorised access"})
     }
@@ -69,7 +78,7 @@ export const stop = async(req,res)=>{
 }
 
 export const topTracks = async(req,res)=>{
-  const token = req.token
+  const token = req.user.accessToken
   if(!token){
     return res.status(401).json({message: "Unauthorised access"})
    }
@@ -94,7 +103,7 @@ export const topTracks = async(req,res)=>{
 
 }
 export const play = async(req,res)=>{
-  const token = req.token
+  const token = req.user.accessToken
   if(!token){
    return res.status(401).json({message: "Unauthorised access"})
   }
@@ -115,7 +124,7 @@ export const play = async(req,res)=>{
 }
 
 export const playAnyTop10Track = async(req,res)=>{
-  const token = req.token
+  const token = req.user.accessToken
   if(!token){
    return res.status(401).json({message: "Unauthorised access"})
   }
@@ -148,7 +157,7 @@ export const playAnyTop10Track = async(req,res)=>{
 }
 
 export const getCurrentPlay=async(req,res)=>{
-  const token = req.token
+  const token = req.user.accessToken
   if(!token){
    return res.status(401).json({message: "Unauthorised access"})
   }
