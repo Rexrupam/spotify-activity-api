@@ -1,11 +1,18 @@
-GET /healthCheck
+# API documentation for Spotify Integration API
+This document provides an overview of the endpoints available in the Spotify Integration API, which allows users to interact with Spotify's playback.
+## Base URL
+The base URL for the API is `https://spotify-activity-api.onrender.com`.
+
+## Endpoints
+
+### GET /healthCheck
 
     Description: Health check endpoint to verify server status.
 
     response:
         - Returns a simple message indicating the server is running.
 
-GET /login
+### GET /login
 
     Description: Initiates user login (could redirect to Spotify login).
 
@@ -13,7 +20,7 @@ GET /login
         - Redirects to Spotify OAuth login page
 
 
-GET /spotify/callback
+### GET /spotify/callback
 
     Description: Callback endpoint for Spotify OAuth login.
 
@@ -22,7 +29,7 @@ GET /spotify/callback
         - Redirects to my portfolio page.
 
 
-GET /stop
+### GET /stop
 
     Description: Pauses the current playback on Spotify.
 
@@ -31,7 +38,7 @@ GET /stop
     response:
         - Returns a success message indicating playback has been paused.
 
-GET /play
+### GET /play
 
     Description: Starts playing the current track on Spotify.
 
@@ -40,7 +47,17 @@ GET /play
     response:
         - Returns a success message indicating playback has started.
 
-GET /toptrack
+### GET /toptrack
+
+
+    Description: Starts playing the current track on Spotify.
+
+    Auth: ✅ Requires token
+
+    response:
+        - Returns a success message indicating playback has started.
+
+### GET /toptrack
 
     Description: Fetches the user's top 10 track on Spotify.
 
@@ -49,7 +66,8 @@ GET /toptrack
     response:
         - Returns the user's top 10 tracks in an array.
 
-GET /playanytrack
+
+### GET /playanytrack
 
     Description: Plays a any top 10 track on Spotify.
 
@@ -58,7 +76,7 @@ GET /playanytrack
     response:
         - Returns a success message indicating the specified track is now playing.
 
-GET /current-track
+### GET /current-track
 
     Description: Fetches the currently playing track on Spotify.
 
